@@ -3,9 +3,7 @@ package jp.co.rakus.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,32 +12,26 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
 
 import jp.co.rakus.domain.Category;
 import jp.co.rakus.domain.Item;
-import jp.co.rakus.domain.LoginUser;
 import jp.co.rakus.form.SearchItemForm;
 import jp.co.rakus.service.CategoryService;
 import jp.co.rakus.service.ItemService;
 import jp.co.rakus.service.PagingItemListService;
 
-/**
- * 商品一覧画面を表示するコントローラー.
- * 
- * @author risa.okumura
- *
- */
 @Controller
-@Transactional
-@RequestMapping("/viewItemList")
-public class ViewItemListController {
+@RequestMapping("/searchItem")
+@SessionAttributes(names = "searchItemForm")
+public class SearchItemController {
 
 	@Autowired
 	private ItemService itemService;
 
 	@Autowired
 	private CategoryService categoryService;
-	
+
 	@Autowired
 	private PagingItemListService pagingItemListService;
 
@@ -49,41 +41,67 @@ public class ViewItemListController {
 	}
 	
 	/**
-	 * 商品一覧表示画面を表示する.
+	 * 検索結果を表示し、ページング処理を行う.
 	 * 
 	 * @param model
-	 * @return 商品一覧表示画面
+	 * @param searchItemForm
+	 * @param pageNum
+	 * @param itemList
+	 * @return 検索結果画面.
 	 */
-	@RequestMapping("/list")
-	public String list(Model model, @AuthenticationPrincipal LoginUser loginUser,@RequestParam(value="pageNum",required = false) String pageNum) {
-		
-		// 商品一覧を表示する.
-		Integer offset = pagingItemListService.offset(pageNum);
-		List<Item> itemList = categoryService.findCategoryList(itemService.findAll(offset));
-		model.addAttribute("itemList", itemList);
+	@RequestMapping("/toSearch")
+	public String toSearch(SessionStatus sessionStatus,Model model, SearchItemForm searchItemForm,@RequestParam(value = "pageNum", required = false) String pageNum,List<Item> itemList) {
 
+		model.addAttribute("itemList", itemList);
+		
 		// 検索用の親カテゴリーの情報を取得し、リクエストスコープに格納する（初期）.
 		List<Category> parentList = categoryService.findParentCategory();
 		model.addAttribute("parentList", parentList);
-		
-		//総ページ数をリクエストスコープに格納する.
-		Integer countPage = pagingItemListService.countPage();
+
+		// 検索結果のページ数をリクエストスコープに格納する.
+		Integer countPage = pagingItemListService.countPage(searchItemForm);
+		System.out.println(countPage);
 		model.addAttribute("countPage", countPage);
+
+		// ページング用リンクをリクエストスコープに格納する.
 		
-		//ページング用リンクをリクエストスコープに格納する.
-		System.out.println("現在のページは"+pageNum);
-		Integer nextLink = pagingItemListService.nextLink(pageNum,countPage);
-		System.out.println("次のリンク"+nextLink);
-		model.addAttribute("nextLink",nextLink);
-		
+		System.out.println("現在のページは" + pageNum);
+		Integer nextLink = pagingItemListService.nextLink(pageNum, countPage);
+		System.out.println("次のリンク" + nextLink);
+		model.addAttribute("nextLink", nextLink);
+
 		Integer preLink = pagingItemListService.preLink(pageNum);
-		System.out.println("前のリンク"+preLink);
-		model.addAttribute("preLink",preLink);
+		System.out.println("前のリンク" + preLink);
+		model.addAttribute("preLink", preLink);
 		
-		String startPage = "viewItemList/list?pageNum=";
+		String startPage = "searchItem/search?pageNum=";
 		model.addAttribute("startPage",startPage);
-		
+
 		return "list";
+
+	}
+
+	/**
+	 * 商品を検索する.
+	 * 
+	 * @param searchItemForm
+	 * @param model
+	 * @return　検索結果画面.
+	 */
+	@RequestMapping("/search")
+	public String search(@RequestParam(value = "parentId", required = false) String parentId,
+			@RequestParam(value = "childId", required = false) String childId,
+			@RequestParam(value = "grandChildId", required = false) String grandChildId,
+			@RequestParam(value = "brand", required = false) String brand,
+			@RequestParam(value = "pageNum", required = false) String pageNum, SearchItemForm searchItemForm,
+			Model model,SessionStatus sessionStatus) {
+
+		System.out.println("検索条件" + searchItemForm.toString());
+
+		Integer offset = pagingItemListService.offset(pageNum);
+		List<Item> itemList = categoryService.findCategoryList(itemService.searchItem(searchItemForm, offset));
+
+		return toSearch(sessionStatus,model, searchItemForm, pageNum,itemList);
 	}
 
 	/**

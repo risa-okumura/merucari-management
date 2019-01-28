@@ -2,11 +2,13 @@ package jp.co.rakus.controller;
 
 import java.util.List;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import jp.co.rakus.domain.Category;
-import jp.co.rakus.domain.Item;
+import jp.co.rakus.domain.LoginUser;
 import jp.co.rakus.form.ItemForm;
 import jp.co.rakus.service.CategoryService;
 import jp.co.rakus.service.ItemService;
@@ -49,7 +51,7 @@ public class AddItemController {
 	 * @return
 	 */
 	@RequestMapping("/add")
-	public String add(Model model) {
+	public String add(Model model,@AuthenticationPrincipal LoginUser loginUser) {
 		
 		// 検索用の親カテゴリーの情報を取得し、リクエストスコープに格納する（初期）.
 		List<Category> parentList = categoryService.findParentCategory();
@@ -63,7 +65,11 @@ public class AddItemController {
 	 * @return　商品登録画面
 	 */
 	@RequestMapping("/addItem")
-	public String addItem(ItemForm itemForm) {
+	public String addItem(@Validated ItemForm itemForm,BindingResult result,Model model,@AuthenticationPrincipal LoginUser loginUser) {
+		
+		if(result.hasErrors()) {
+			return add(model,loginUser);
+		}
 
 		itemService.addItem(itemForm);
 		

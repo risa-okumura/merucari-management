@@ -3,6 +3,7 @@ package jp.co.rakus.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import jp.co.rakus.domain.Category;
 import jp.co.rakus.domain.Item;
+import jp.co.rakus.domain.LoginUser;
 import jp.co.rakus.form.ItemForm;
 import jp.co.rakus.service.CategoryService;
 import jp.co.rakus.service.ItemService;
@@ -30,13 +32,16 @@ public class EditItemController {
 	@Autowired
 	private CategoryService categoryService;
 	
+	@Autowired
+	private ViewItemDetailController viewItemDetailController;
+	
 	@ModelAttribute
 	public ItemForm setUpForm() {
 		return new ItemForm();
 	}
 
 	@RequestMapping("/toEdit")
-	public String toEdit(@RequestParam("id") Integer id,Model model) {
+	public String toEdit(@RequestParam("id") Integer id,Model model,@AuthenticationPrincipal LoginUser loginUser) {
 		
 		Item item = itemService.findById(id);
 		Category category = categoryService.findNameAllById(item.getCategory());
@@ -49,6 +54,16 @@ public class EditItemController {
 		model.addAttribute("parentList", parentList);
 
 		return "edit";
+	}
+	
+	@RequestMapping("/edit")
+	public String edit(ItemForm itemForm,String id,Model model, @AuthenticationPrincipal LoginUser loginUser) {
+		
+		System.out.println(itemForm.toString());
+		itemForm.setId(Integer.parseInt(id));
+		itemService.update(itemForm);
+		
+		return viewItemDetailController.detail(Integer.parseInt(id), model,loginUser);
 	}
 	
 	/**

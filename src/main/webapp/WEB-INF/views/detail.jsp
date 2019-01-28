@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -29,15 +30,19 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-       <a class="navbar-brand" href="${pageContext.request.contextPath}/viewItemList/list">Rakus Items</a>
+      <a class="navbar-brand" href="${pageContext.request.contextPath}/viewItemList/list">Rakus Items</a>
     </div>
     <div id="navbar" class="collapse navbar-collapse">
       <div>
         <ul class="nav navbar-nav navbar-right">
-          <li><a id="logout" href="./login.html">Logout&nbsp;<i class="fa fa-power-off"></i></a></li>
+          <li><a id="logout" href="./login.html">Logout <i class="fa fa-power-off"></i></a></li>
         </ul>
+        <sec:authorize access="hasRole('ROLE_USER') and isAuthenticated()">
+					<sec:authentication var="userEmail" property="principal.user.email" />
+					</sec:authorize>
         <p class="navbar-text navbar-right">
-          <span id="loginName">user: userName</span>
+        
+          <span id="loginName">user : <c:out value="${userEmail}"/></span>
         </p>
       </div>
     </div>
@@ -45,7 +50,7 @@
 
   <!-- details -->
   <div class="container">
-    <a type="button" class="btn btn-default" href="./list.html"><i class="fa fa-reply"></i> back</a>
+    <button type="button" class="btn btn-default" onclick="history.back()"><i class="fa fa-reply"></i>back</button>
     <h2>Details</h2>
     <div id="details">
       <table class="table table-hover">

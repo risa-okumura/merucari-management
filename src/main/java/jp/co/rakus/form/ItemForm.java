@@ -1,5 +1,8 @@
 package jp.co.rakus.form;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 /**
  * 
  * 商品情報を受け取るフォーム.
@@ -12,16 +15,20 @@ public class ItemForm {
 	/** 商品のID */
 	private Integer id;
 	/** 商品の名前 */
+	@NotEmpty(message="商品名を入力してください")
 	private String name;
 	/** 商品の状態ID */
 	private Integer condition;
 	/** 商品のカテゴリーID */
 	private Integer category;
 	/** 商品のブランド */
+	@NotEmpty(message="ブランド名を入力してください")
 	private String brand;
 	/** 商品の料金 */
+	@NotNull(message="商品の値段を入力してください")
 	private Integer price;
 	/** 商品の説明 */
+	@NotEmpty(message="商品の説明を入力してください")
 	private String description;
 	/** 親カテゴリーの名前 */
 	private Integer parentId;

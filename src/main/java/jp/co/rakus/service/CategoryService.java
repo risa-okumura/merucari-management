@@ -30,24 +30,40 @@ public class CategoryService {
 	public List<Item> findCategoryList(List<Item> itemList){
 		
 		for (Item item : itemList) {
-			Category category = categoryRepository.findNameAllById(item.getCategory());
-
-			String categoryName = category.getNameAll();
-			String[] categoryNames = categoryName.split("/", 3);
-
-			String parent = categoryNames[0];
-			String child = categoryNames[1];
-			String grandChild = categoryNames[2];
-
-			category.setParentName(parent);
-			category.setChildName(child);
-			category.setGrandChildName(grandChild);
-
-			item.setCategoryName(category);
+			
+			Integer id = item.getCategory();
+			
+			if(id != 0) {
+				
+				Category category = categoryRepository.findById(id);
+				
+				String categoryName = category.getNameAll();
+				String[] categoryNames = categoryName.split("/", 3);
+				
+				String parent = categoryNames[0];
+				String child = categoryNames[1];
+				String grandChild = categoryNames[2];
+				
+				category.setParentName(parent);
+				category.setChildName(child);
+				category.setGrandChildName(grandChild);
+				
+				Category parentCategory = categoryRepository.findParentBychildId(category.getParent());
+				category.setParentId(parentCategory.getId());
+				category.setChildId(category.getParent());
+				
+				item.setCategoryName(category);
+				
+			}
+				
+				
 		}
 		
 		return itemList;
 	}
+	
+	
+	
 	
 	/**
 	 * カテゴリー検索のプルダウン表示について、上位のカテゴリーが変更されたら下位のカテゴリーのプルダウン内容を変更する.
@@ -106,7 +122,12 @@ public class CategoryService {
 	}
 	
 	public Category findNameAllById(Integer id) {
-		Category category = categoryRepository.findNameAllById(id);
+		
+		Category category = new Category();
+		
+		if(id != 0) {
+			category = categoryRepository.findById(id);
+		}
 		return category;
 	}
 	

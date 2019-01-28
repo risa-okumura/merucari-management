@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -22,7 +23,7 @@
   <title>Rakus Items</title>
 </head>
 <body>
-  <!-- navbar -->
+   <!-- navbar -->
   <nav class="navbar navbar-inverse">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -35,10 +36,14 @@
     <div id="navbar" class="collapse navbar-collapse">
       <div>
         <ul class="nav navbar-nav navbar-right">
-          <li><a id="logout" href="./login.html">Logout&nbsp;<i class="fa fa-power-off"></i></a></li>
+          <li><a id="logout" href="./login.html">Logout <i class="fa fa-power-off"></i></a></li>
         </ul>
+        <sec:authorize access="hasRole('ROLE_USER') and isAuthenticated()">
+					<sec:authentication var="userEmail" property="principal.user.email" />
+					</sec:authorize>
         <p class="navbar-text navbar-right">
-          <span id="loginName">user: userName</span>
+        
+          <span id="loginName">user : <c:out value="${userEmail}"/></span>
         </p>
       </div>
     </div>
@@ -46,7 +51,7 @@
 
   <!-- details -->
   <div id="input-main" class="container">
-    <a type="button" class="btn btn-default" href="./list.html"><i class="fa fa-reply"></i> back</a>
+    <button type="button" class="btn btn-default" onclick="history.back()"><i class="fa fa-reply"></i>back</button>
     <h2>Add</h2>
 
     <!-- add form -->
@@ -55,16 +60,16 @@
       <div class="form-group">
         <label for="inputName" class="col-sm-2 control-label">name</label>
         <div class="col-sm-8">
+        　　　　　<form:errors path="name" cssStyle="color:red" element="div"/>
           <form:input path="name" class="form-control" id="name" placeholder="item_name"/>
-          <span class="text-danger">error:may not be empty</span>
         </div>
       </div>
       <!-- price -->
       <div class="form-group">
         <label for="price" class="col-sm-2 control-label">price</label>
         <div class="col-sm-8">
+        　　　　   <form:errors path="price" cssStyle="color:red" element="div"/>
           <form:input path="price" class="form-control" id="price" placeholder="price"/>
-          <span class="text-danger">error:may not be empty</span>
         </div>
       </div>
       <!-- category -->
@@ -105,8 +110,8 @@
       <div class="form-group">
         <label for="brand" class="col-sm-2 control-label">brand</label>
         <div class="col-sm-8">
+        　　　　 <form:errors path="brand" cssStyle="color:red" element="div"/>
          <form:input path="brand" class="form-control" id="brand" placeholder="brand"/>
-          <span class="text-danger">error:may not be empty</span>
         </div>
       </div>
       <!-- condition -->
@@ -134,8 +139,8 @@
       <div class="form-group">
         <label for="description" class="col-sm-2 control-label">description</label>
         <div class="col-sm-8">
+        　　　　 <form:errors path="description" cssStyle="color:red" element="div"/>
          <form:textarea rows="5" path="description" class="form-control" id="description" placeholder="description"/>
-          <span class="text-danger">error:may not be empty</span>
         </div>
       </div>
       <!-- submit button -->

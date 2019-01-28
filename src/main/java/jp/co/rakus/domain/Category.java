@@ -23,12 +23,39 @@ public class Category {
 	/**孫カテゴリーの名前*/
 	private String grandChildName;
 	
-	
+	/**親カテゴリーのID*/
+	private Integer parentId;	
+	/**子カテゴリーのID*/
+	private Integer childId;	
+
+
 	@Override
 	public String toString() {
-		return "Category [id=" + id + ", parent=" + parent + ", name=" + name + ", nameAll=" + nameAll + "]";
+		return "Category [id=" + id + ", parent=" + parent + ", name=" + name + ", nameAll=" + nameAll + ", parentName="
+				+ parentName + ", childName=" + childName + ", grandChildName=" + grandChildName + ", parentId="
+				+ parentId + ", childId=" + childId + "]";
 	}
-	
+
+
+	public Integer getChildId() {
+		return childId;
+	}
+
+
+	public void setChildId(Integer childId) {
+		this.childId = childId;
+	}
+
+
+
+	public Integer getParentId() {
+		return parentId;
+	}
+
+
+	public void setParentId(Integer parentId) {
+		this.parentId = parentId;
+	}
 	
 	public String getParentName() {
 		return parentName;

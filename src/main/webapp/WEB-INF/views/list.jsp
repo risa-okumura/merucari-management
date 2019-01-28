@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -19,6 +20,7 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
     integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   <script src="../../js/pulldown.js"></script>
+  <script src="../../js/form.js"></script>
   <title>Rakus Items</title>
 </head>
 <body>
@@ -37,8 +39,12 @@
         <ul class="nav navbar-nav navbar-right">
           <li><a id="logout" href="./login.html">Logout <i class="fa fa-power-off"></i></a></li>
         </ul>
+        <sec:authorize access="hasRole('ROLE_USER') and isAuthenticated()">
+					<sec:authentication var="userEmail" property="principal.user.email" />
+					</sec:authorize>
         <p class="navbar-text navbar-right">
-          <span id="loginName">user: userName</span>
+        
+          <span id="loginName">user : <c:out value="${userEmail}"/></span>
         </p>
       </div>
     </div>
@@ -52,7 +58,8 @@
 
     <!-- 検索フォーム -->
     <div id="forms">
-      <form:form modelAttribute="searchItemForm" action="${pageContext.request.contextPath}/viewItemList/searchItem" class="form-inline" role="form">
+    　　　　 <div class="error" style="color:red"><c:out value="${searchError}"></c:out></div>
+      <form:form modelAttribute="searchItemForm" action="${pageContext.request.contextPath}/searchItem/search" class="form-inline" role="form">
         <div class="form-group">
           <form:input path="name" class="form-control" id="name" placeholder="item_name"/>
         </div>
@@ -82,15 +89,14 @@
       </form:form>
     </div>
     
-    <!-- pagination -->
+  <!-- pagination -->
     <div class="pages">
       <nav class="page-nav">
         <ul class="pager">
-          <li class="previous"><a href="#">&larr; prev</a></li>
-          <li class="next"><a href="#">next &rarr;</a></li>
+          <li class="previous"><a href="${pageContext.request.contextPath}/<c:out value="${startPage}"/><c:out value="${preLink}"/>">prev &rarr;</a></li>
+          <li class="next"><a href="${pageContext.request.contextPath}/<c:out value="${startPage}"/><c:out value="${nextLink}"/>">next &rarr;</a></li>
         </ul>
       </nav>
-    </div>
 
     <!-- table -->
     <div class="table-responsive">
@@ -110,8 +116,16 @@
           <tr>
             <td class="item-name"><a href="${pageContext.request.contextPath}/viewItemDetail/detail?id=<c:out value="${item.id}"/>"> <c:out value="${item.name}" /> </a></td>
             <td class="item-price"><c:out value="${item.price}" /></td>
-            <td class="item-category"><a href="" ><c:out value="${item.categoryName.parentName}" /></a> / <a href=""><c:out value="${item.categoryName.childName}" /></a> / <a href=""><c:out value="${item.categoryName.grandChildName}" /></a></td>
-            <td class="item-brand"><a href=""><c:out value="${item.brand}" /></a></td>
+            <td class="item-category">
+            
+            	<a href="${pageContext.request.contextPath}/searchItem/search?parentId=<c:out value="${item.categoryName.parentId}"/>"><c:out value="${item.categoryName.parentName}" /></a>
+	 			
+	 			/<a href="${pageContext.request.contextPath}/searchItem/search?childId=<c:out value="${item.categoryName.childId}"/>"><c:out value="${item.categoryName.childName}" /></a>
+	 			
+	 			/<a href="${pageContext.request.contextPath}/searchItem/search?grandChildId=<c:out value="${item.categoryName.id}"/>"><c:out value="${item.categoryName.grandChildName}" /></a>
+	 			
+           </td>
+            <td class="item-brand"><a href="${pageContext.request.contextPath}/searchItem/search?brand=<c:out value="${item.brand}"/>"><c:out value="${item.brand}" /></a></td>
             <td class="item-condition"><c:out value="${item.condition}" /></td>
           </tr>
           
@@ -121,29 +135,33 @@
       </table>
     </div>
 
-    <!-- pagination -->
+        
+  <!-- pagination -->
     <div class="pages">
       <nav class="page-nav">
         <ul class="pager">
-          <li class="previous"><a href="#">&larr; prev</a></li>
-          <li class="next"><a href="#">next &rarr;</a></li>
+          <li class="previous"><a href="${pageContext.request.contextPath}/<c:out value="${startPage}"/><c:out value="${preLink}"/>">prev &rarr;</a></li>
+          <li class="next"><a href="${pageContext.request.contextPath}/<c:out value="${startPage}"/><c:out value="${nextLink}"/>">next &rarr;</a></li>
         </ul>
       </nav>
       <!-- ページ番号を指定して表示するフォーム -->
       <div id="select-page">
-        <form class="form-inline">
+        <form:form id="searchForm" action="${pageContext.request.contextPath}/viewItemList/list" class="form-inline" method="POST">
           <div class="form-group">
             <div class="input-group col-xs-6">
               <label></label>
-              <input type="text" class="form-control"/>
+              <input type="text" name="pageNum" class="form-control"/>
               <!-- 総ページ数 -->
-              <div class="input-group-addon">/ 20</div>
+              <div class="input-group-addon">/ <c:out value="${countPage}"/></div>
             </div>
             <div class="input-group col-xs-1">
-              <button type="submit" class="btn btn-default">Go</button>
+        	<div class="form-name">
+              <div id="form-change"><button type="submit" class="btn btn-default">Go</button></div>
+            </div>
             </div>
           </div>
-        </form>
+         </form:form>
+        </div>
       </div>
     </div>
   </div>

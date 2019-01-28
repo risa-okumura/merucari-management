@@ -21,6 +21,8 @@ $(function() {
 			success(data,id);
 		})
 		
+		console.log(url);
+		
 	})
 	
 })

@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -23,7 +24,7 @@
 </head>
 <body>
   <!-- navbar -->
-  <nav class="navbar navbar-inverse">
+    <nav class="navbar navbar-inverse">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
         <span class="icon-bar"></span>
@@ -35,10 +36,14 @@
     <div id="navbar" class="collapse navbar-collapse">
       <div>
         <ul class="nav navbar-nav navbar-right">
-          <li><a id="logout" href="./login.html">Logout&nbsp;<i class="fa fa-power-off"></i></a></li>
+          <li><a id="logout" href="./login.html">Logout <i class="fa fa-power-off"></i></a></li>
         </ul>
+        <sec:authorize access="hasRole('ROLE_USER') and isAuthenticated()">
+					<sec:authentication var="userEmail" property="principal.user.email" />
+					</sec:authorize>
         <p class="navbar-text navbar-right">
-          <span id="loginName">user: userName</span>
+        
+          <span id="loginName">user : <c:out value="${userEmail}"/></span>
         </p>
       </div>
     </div>
@@ -46,17 +51,16 @@
 
   <!-- details -->
   <div id="input-main" class="container">
-    <a type="button" class="btn btn-default" href="./detail.html"><i class="fa fa-reply"></i> back</a>
+    <button type="button" class="btn btn-default" onclick="history.back()"><i class="fa fa-reply"></i>back</button>
     <h2>Edit</h2>
 
     <!-- edit form -->
-    <form:form modelAttribute="itemForm" action="${pageContext.request.contextPath}/editItem/toEdit" class="form-horizontal" role="form">
+    <form:form modelAttribute="itemForm" action="${pageContext.request.contextPath}/editItem/edit" class="form-horizontal" role="form">
       <!-- name -->
       <div class="form-group">
         <label for="inputName" class="col-sm-2 control-label">name</label>
         <div class="col-sm-8">
           <form:input path="name" class="form-control" id="name" placeholder="item_name" value="${item.name}" />
-          <span class="text-danger">error:may not be empty</span>
         </div>
       </div>
       <!-- price -->
@@ -98,7 +102,6 @@
       <div class="form-group">
         <label for="category" class="col-sm-2 control-label"></label>
         <div class="col-sm-8">
-          <span class="text-danger">error:may not be empty</span>
         </div>
       </div>
       <!-- brand -->
@@ -106,7 +109,6 @@
         <label for="brand" class="col-sm-2 control-label">brand</label>
         <div class="col-sm-8">
          <form:input path="brand" class="form-control" id="brand" placeholder="brand" value="${item.brand}"/>
-          <span class="text-danger">error:may not be empty</span>
         </div>
       </div>
       <!-- condition -->
@@ -127,20 +129,19 @@
       <div class="form-group">
         <label for="category" class="col-sm-2 control-label"></label>
         <div class="col-sm-8">
-          <span class="text-danger">error:may not be empty</span>
         </div>
       </div>
       <!-- description -->
       <div class="form-group">
         <label for="description" class="col-sm-2 control-label">description</label>
         <div class="col-sm-8">
-         <textarea rows="5" path="description" class="form-control" id="description" placeholder="description"><c:out value="${item.description}"/></textarea>
-          <span class="text-danger">error:may not be empty</span>
+         <textarea rows="5" name="description" class="form-control" id="description" placeholder="description"><c:out value="${item.description}"/></textarea>
         </div>
       </div>
       <!-- submit button -->
       <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
+          <input type="hidden" value="${item.id}" name="id">
           <button type="submit" class="btn btn-default">Submit</button>
         </div>
       </div>

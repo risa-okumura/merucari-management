@@ -55,11 +55,11 @@ public class CategoryRepository {
 	 * @param id
 	 * @return カテゴリー
 	 */
-	public Category findNameAllById(Integer id){
+	public Category findById(Integer id){
 		
 		SqlParameterSource param = new MapSqlParameterSource().addValue("id", id);
-		String sql = "SELECT name_all FROM category WHERE id = :id ;";
-		Category category = template.queryForObject(sql, param, NAMEALL_ROW_MAPPER);
+		String sql = "SELECT id,name_all,parent,name FROM category WHERE id = :id ;";
+		Category category = template.queryForObject(sql, param, CATEGORY_ROW_MAPPER);
 		return category;
 		
 	}
@@ -72,7 +72,7 @@ public class CategoryRepository {
 	 */
 	public List<Integer> findIdByParentIdANDChildId(Integer parentId,Integer childId) {
 		SqlParameterSource param = new MapSqlParameterSource().addValue("parentId", parentId).addValue("childId", childId);
-		String sql = "SELECT id FROM category WHERE id = :parentId AND name_all IS NOT NULL OR parent = :childId AND name_all IS NOT NULL OR parent IN (SELECT id FROM category WHERE parent = :parentId);";
+		String sql = "SELECT id FROM category WHERE id = :parentId AND name_all IS NOT NULL OR parent = :childId AND name_all IS NOT NULL OR parent IN (SELECT id FROM category WHERE parent = :childId);";
 		List<Integer> searchIdList = template.query(sql, param, CATEGORYID_ROW_MAPPER);
 		
 		return searchIdList;
@@ -98,6 +98,17 @@ public class CategoryRepository {
 		String sql ="SELECT id,name_all,parent,name FROM category WHERE name_all IS NULL AND parent IS NULL ORDER BY name;";
 		List<Category> categoryList = template.query(sql, param, CATEGORY_ROW_MAPPER);
 		return categoryList;
+	}
+	
+	/**
+	 * 子IDを元に親カテゴリーのIdを検索する.
+	 * @return
+	 */
+	public Category findParentBychildId(Integer childId){
+		SqlParameterSource param = new MapSqlParameterSource().addValue("childId",childId);
+		String sql ="SELECT id,name_all,parent,name FROM category WHERE id = (SELECT parent FROM category WHERE id = :childId);";
+		Category category = template.queryForObject(sql, param, CATEGORY_ROW_MAPPER);
+		return category;
 	}
 	
 	/**
