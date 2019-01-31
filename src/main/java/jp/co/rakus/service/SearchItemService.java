@@ -3,25 +3,23 @@ package jp.co.rakus.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import jp.co.rakus.domain.Item;
-import jp.co.rakus.form.ItemForm;
 import jp.co.rakus.form.SearchItemForm;
 import jp.co.rakus.repository.CategoryRepository;
 import jp.co.rakus.repository.ItemRepository;
 
 @Service
-public class ItemService {
-
+public class SearchItemService {
+	
 	@Autowired
 	private ItemRepository itemRepository;
 
 	@Autowired
 	private CategoryRepository categoryRepository;
-
+	
 	/**
 	 * 商品を全件検索する.
 	 * 
@@ -34,7 +32,7 @@ public class ItemService {
 		return itemList;
 
 	}
-
+	
 	/**
 	 * 検索フォームの情報をもとに、商品を検索する.
 	 * 
@@ -77,34 +75,39 @@ public class ItemService {
 			}
 
 		} else {
+			//孫IDを検索用IDリストに詰める.
 			searchIdList.add(grandChildId);
 		}
 
 
-		// もし検索条件の親IDもnullなら、カテゴリーを指定せずに検索.
+		// もし検索条件のカテゴリーIDがない場合は、カテゴリーを指定せずに検索する.
+		//　カテゴリーIDが存在する場合はカテゴリー情報を含めて検索する.
 		if (searchIdList.size() == 0) {
-			
 			if(name == null && brand == null) {
+				//名前およびブランド名もない場合は全件検索.
 				itemList = itemRepository.findAllOffset(offset);
 			} else if (name == null) {
+				//名前がない場合はブランド名で検索.
 				itemList = itemRepository.findByBrand(brand,offset);
 			} else if (brand == null) {
+				//ブランド名がない場合は商品名で検索.
 				itemList = itemRepository.findByName(name,offset);
 			} else {
+				//商品名とブランド名で検索.
 				itemList = itemRepository.findByNameAndBrand(name, brand,offset);
 			}
-
-
 		} else {
-			
 			if(name == null && brand == null) {
-				System.out.println("カテゴリーによる検索"+searchIdList);
+				//名前およびブランド名がない場合はカテゴリー情報のみで検索.
 				itemList = itemRepository.findByCategory(searchIdList,offset);
 			}else if(name == null) {
+				//名前がない場合は、ブランド名とカテゴリー情報で検索.
 				itemList = itemRepository.findByBrandAndCategory(brand, searchIdList,offset);
 			}else if( brand == null){
+				//ブランド名がない場合は、商品名とカテゴリー情報で検索.
 				itemList = itemRepository.findByNameAndCategory(name, searchIdList,offset);
 			}else {
+				//ブランド名と商品名とカテゴリー情報で検索.
 				itemList = itemRepository.findByNameAndCategoryAndBrand(name, searchIdList, brand,offset);
 			}
 			
@@ -113,55 +116,5 @@ public class ItemService {
 		return itemList;
 
 	}
-	
-	/**
-	 * 商品情報を追加する.
-	 * 
-	 * @param itemForm 商品登録用フォームに入力された情報
-	 */
-	public void addItem(ItemForm itemForm) {
-		
-		Item item = new Item();
-		BeanUtils.copyProperties(itemForm, item);
-		
-		item.setCategory(itemForm.getGrandChildId());
-		item.setShipping(0);
-		
-		itemRepository.save(item);
-		
-	}
-	
-	/**
-	 * IDを元に商品情報を取得する.
-	 * 
-	 * @param id
-	 * @return 商品情報
-	 */
-	 
-	 
-	public Item findById(Integer id) {
-		
-		Item item = itemRepository.findById(id);
-		
-		return item;
-	}
-	
-	/**
-	 * 商品情報を更新する.
-	 * 
-	 * @param itemForm
-	 */
-	public void update(ItemForm itemForm) {
-		
-		Item item = new Item();
-		BeanUtils.copyProperties(itemForm, item);
-		
-		item.setCategory(itemForm.getGrandChildId());
-		
-		itemRepository.updata(item);
-		
-	}
-	
-	
 
 }

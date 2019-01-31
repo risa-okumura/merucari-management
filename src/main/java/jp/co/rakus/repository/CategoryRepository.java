@@ -24,12 +24,7 @@ public class CategoryRepository {
 	
 	@Autowired
 	private NamedParameterJdbcTemplate template;
-	
-	private static final RowMapper<Category> NAMEALL_ROW_MAPPER = (rs,i) ->{
-		Category category = new Category();
-		category.setNameAll(rs.getString("name_all"));
-		return category;
-	};
+
 	
 	private static final RowMapper<Integer> CATEGORYID_ROW_MAPPER = (rs,i) ->{
 		Integer searchId = rs.getInt("id");
@@ -50,7 +45,7 @@ public class CategoryRepository {
 	
 	
 	/**
-	 * カテゴリーIDでカテゴリー情報を1件検索する.
+	 * IDを指定してカテゴリー情報を1件検索する.
 	 * 
 	 * @param id
 	 * @return カテゴリー
@@ -79,8 +74,8 @@ public class CategoryRepository {
 	}
 	
 	/**
-	 *　全件検索する.
-	 * @return カテゴリーIDの詰まったリスト
+	 *　カテゴリーの情報を全件検索する.
+	 * @return 全カテゴリー情報の詰まったリスト
 	 */
 	public List<Category> findAll(){
 		SqlParameterSource param = new MapSqlParameterSource();
@@ -91,7 +86,7 @@ public class CategoryRepository {
 	
 	/**
 	 * 親カテゴリーを検索する.
-	 * @return
+	 * @return　親カテゴリーの情報の詰まったリスト
 	 */
 	public List<Category> findParent(){
 		SqlParameterSource param = new MapSqlParameterSource();
@@ -101,8 +96,8 @@ public class CategoryRepository {
 	}
 	
 	/**
-	 * 子IDを元に親カテゴリーのIdを検索する.
-	 * @return
+	 * 子IDに紐づく親カテゴリーを検索する.
+	 * @return　親カテゴリーの情報の詰まったリスト
 	 */
 	public Category findParentBychildId(Integer childId){
 		SqlParameterSource param = new MapSqlParameterSource().addValue("childId",childId);
@@ -113,7 +108,7 @@ public class CategoryRepository {
 	
 	/**
 	 * 子カテゴリーを検索する.
-	 * @return
+	 * @return　子カテゴリーの情報の詰まったリスト
 	 */
 	public List<Category> findChild(){
 		SqlParameterSource param = new MapSqlParameterSource();
@@ -123,26 +118,26 @@ public class CategoryRepository {
 	}
 	
 	/**
-	 * 直属の親IDに紐づく子カテゴリーを検索する.
+	 * 検索用IDに紐づく子カテゴリーを検索する.
 	 * 
-	 * @param parentId
-	 * @return
+	 * @param searchId
+	 * @return　子カテゴリーの情報の詰まったリスト
 	 */
-	public List<Category> findChildByParentId(Integer parentId){
-		SqlParameterSource param = new MapSqlParameterSource().addValue("parentId", parentId);
-		String sql ="SELECT id,name_all,parent,name FROM category WHERE name_all IS NULL AND parent = :parentId ORDER BY name;";
+	public List<Category> findChildByParentId(Integer searchId){
+		SqlParameterSource param = new MapSqlParameterSource().addValue("searchId", searchId);
+		String sql ="SELECT id,name_all,parent,name FROM category WHERE name_all IS NULL AND parent = :searchId ORDER BY name;";
 		List<Category> categoryList = template.query(sql, param, CATEGORY_ROW_MAPPER);
 		return categoryList;
 	}
 	
 	/**
-	 * 直属の親IDに基づく孫カテゴリーを検索する.
-	 * @param parentId
-	 * @return
+	 * 検索用IDに紐づく孫カテゴリーを検索する.
+	 * @param searchId
+	 * @return 孫カテゴリーの情報の詰まったリスト
 	 */
-	public List<Category> findGrandChildByParentId(Integer parentId){
-		SqlParameterSource param = new MapSqlParameterSource().addValue("parentId", parentId);
-		String sql ="SELECT id,name_all,parent,name FROM category WHERE name_all IS NOT NULL AND parent = :parentId ORDER BY name;";
+	public List<Category> findGrandChildByParentId(Integer searchId){
+		SqlParameterSource param = new MapSqlParameterSource().addValue("searchId", searchId);
+		String sql ="SELECT id,name_all,parent,name FROM category WHERE name_all IS NOT NULL AND parent = :searchId ORDER BY name;";
 		List<Category> categoryList = template.query(sql, param, CATEGORY_ROW_MAPPER);
 		return categoryList;
 	}

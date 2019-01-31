@@ -18,8 +18,8 @@ import jp.co.rakus.domain.Category;
 import jp.co.rakus.domain.Item;
 import jp.co.rakus.form.SearchItemForm;
 import jp.co.rakus.service.CategoryService;
-import jp.co.rakus.service.ItemService;
 import jp.co.rakus.service.PagingItemListService;
+import jp.co.rakus.service.SearchItemService;
 
 @Controller
 @RequestMapping("/searchItem")
@@ -27,7 +27,7 @@ import jp.co.rakus.service.PagingItemListService;
 public class SearchItemController {
 
 	@Autowired
-	private ItemService itemService;
+	private SearchItemService searchItemService;
 
 	@Autowired
 	private CategoryService categoryService;
@@ -54,6 +54,7 @@ public class SearchItemController {
 
 		model.addAttribute("itemList", itemList);
 		
+		Integer nowPage = pagingItemListService.nowPage(pageNum);
 		// 検索用の親カテゴリーの情報を取得し、リクエストスコープに格納する（初期）.
 		List<Category> parentList = categoryService.findParentCategory();
 		model.addAttribute("parentList", parentList);
@@ -62,18 +63,19 @@ public class SearchItemController {
 		Integer countPage = pagingItemListService.countPage(searchItemForm);
 		System.out.println(countPage);
 		model.addAttribute("countPage", countPage);
-
-		// ページング用リンクをリクエストスコープに格納する.
 		
-		System.out.println("現在のページは" + pageNum);
-		Integer nextLink = pagingItemListService.nextLink(pageNum, countPage);
-		System.out.println("次のリンク" + nextLink);
-		model.addAttribute("nextLink", nextLink);
+		//現在のページ番号をリクエストスコープに格納する.
+		model.addAttribute("nowPage",nowPage);
 
-		Integer preLink = pagingItemListService.preLink(pageNum);
-		System.out.println("前のリンク" + preLink);
-		model.addAttribute("preLink", preLink);
+		// 次のページ番号をリクエストスコープに格納する.
+		Integer nextPage = pagingItemListService.nextLink(nowPage, countPage);
+		model.addAttribute("nextPage", nextPage);
+
+		// 1つ前のページ番号をリクエストスコープに格納する.
+		Integer prePage = pagingItemListService.preLink(nowPage);
+		model.addAttribute("prePage", prePage);
 		
+		// ページング処理を行うのに、リクエストパラメータを送るためのパス（ここでは検索ページ）を指定.
 		String startPage = "searchItem/search?pageNum=";
 		model.addAttribute("startPage",startPage);
 
@@ -82,11 +84,19 @@ public class SearchItemController {
 	}
 
 	/**
-	 * 商品を検索する.
+	 * フォームで受け取った検索条件を元に、商品を検索する.
 	 * 
+	 * @param searchItemForm　
+	 * @param model
+	 * @param parentId
+	 * @param childId
+	 * @param grandChildId
+	 * @param brand
+	 * @param pageNum
 	 * @param searchItemForm
 	 * @param model
-	 * @return　検索結果画面.
+	 * @param sessionStatus　フォームの情報をセッションに保存するのに使用する.
+	 * @return　商品検索の結果画面を表示するコントローラ.
 	 */
 	@RequestMapping("/search")
 	public String search(@RequestParam(value = "parentId", required = false) String parentId,
@@ -95,17 +105,19 @@ public class SearchItemController {
 			@RequestParam(value = "brand", required = false) String brand,
 			@RequestParam(value = "pageNum", required = false) String pageNum, SearchItemForm searchItemForm,
 			Model model,SessionStatus sessionStatus) {
-
-		System.out.println("検索条件" + searchItemForm.toString());
-
-		Integer offset = pagingItemListService.offset(pageNum);
-		List<Item> itemList = categoryService.findCategoryList(itemService.searchItem(searchItemForm, offset));
+		
+		//現在のぺージ番号を元に、商品検索結果を取得するための、件数指定用の数値（OFFSET）を取得する.
+		Integer nowPage = pagingItemListService.nowPage(pageNum);
+		Integer offset = pagingItemListService.offset(nowPage);
+		
+		//検索条件と件数指定用の数値を元に商品を検索する.
+		List<Item> itemList = categoryService.findCategoryList(searchItemService.searchItem(searchItemForm, offset));
 
 		return toSearch(sessionStatus,model, searchItemForm, pageNum,itemList);
 	}
 
 	/**
-	 * 検索フォームのカテゴリー欄について、プルダウンで親カテゴリーが変更された際に、表示させる子カテゴリーのプルダウンの内容を変更する.
+	 * 検索フォームのカテゴリー欄について、プルダウンで直属の親カテゴリーが変更された際に、直属の子カテゴリーのプルダウンの内容を変更する.
 	 * 
 	 * @param value
 	 *            親カテゴリーのID
@@ -119,7 +131,6 @@ public class SearchItemController {
 		String str = categoryService.pulldownCategory(parentId);
 
 		return str;
-
 	}
 
 }

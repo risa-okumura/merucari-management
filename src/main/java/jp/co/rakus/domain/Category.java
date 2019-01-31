@@ -9,7 +9,7 @@ public class Category {
 
 	/**カテゴリーID*/
 	private Integer id;
-	/**直属の親カテゴリーのID*/
+	/**直属の上位カテゴリーのID*/
 	private Integer parent;
 	/**カテゴリーIDに対するカテゴリー名*/
 	private String name;

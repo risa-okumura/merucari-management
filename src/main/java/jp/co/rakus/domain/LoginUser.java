@@ -4,6 +4,10 @@ import java.util.Collection;
 
 import org.springframework.security.core.GrantedAuthority;
 
+/**
+ *　利用者のログイン情報を格納するドメイン.
+ * @author risa.okumura
+ */
 public class LoginUser extends org.springframework.security.core.userdetails.User  {
 
 	private static final long serialVersionUID = 1L;
@@ -17,7 +21,6 @@ public class LoginUser extends org.springframework.security.core.userdetails.Use
 	 * @param user　ユーザー情報
 	 * @param authorityList　権限が入ったリスト
 	 */
-
 	public LoginUser(User user,Collection<GrantedAuthority> authorityList) {
 		super(user.getEmail(),user.getPassword(),authorityList);
 		this.user = user;

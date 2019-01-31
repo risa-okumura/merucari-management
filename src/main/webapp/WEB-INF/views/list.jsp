@@ -19,8 +19,11 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
     integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
   <script src="../../js/pulldown.js"></script>
   <script src="../../js/form.js"></script>
+  <script src="../../js/serialize.js"></script>
+<!--   <script src="../../js/read-cookie.js"></script> -->
   <title>Rakus Items</title>
 </head>
 <body>
@@ -61,31 +64,31 @@
     　　　　 <div class="error" style="color:red"><c:out value="${searchError}"></c:out></div>
       <form:form modelAttribute="searchItemForm" action="${pageContext.request.contextPath}/searchItem/search" class="form-inline" role="form">
         <div class="form-group">
-          <form:input path="name" class="form-control" id="name" placeholder="item_name"/>
+          <form:input path="name" class="form-control" id="name" placeholder="item_name" name="name"/>
         </div>
         <div class="form-group"><i class="fa fa-plus"></i></div>
         <div class="form-group">
         
-          <form:select id="pulldown1" path="parentId" class="form-control">
+          <form:select id="pulldown1" path="parentId" class="form-control" name="parentId">
             <option value="">- parentCategory -</option>
             <form:options items="${parentList}" itemLabel="name" itemValue="id"></form:options>
           </form:select>
           
-          <form:select id="pulldown2" path="childId" class="form-control">
+          <form:select id="pulldown2" path="childId" class="form-control" name="childId">
     		<option value="">- childCategory -</option>
 		 </form:select>
           
-          <form:select id="pulldown3" path="grandChildId" class="form-control">
+          <form:select id="pulldown3" path="grandChildId" class="form-control" name="grandChildId">
     		<option value="">- grandChildCategory -</option>
 		 </form:select>
       
         </div>
         <div class="form-group"><i class="fa fa-plus"></i></div>
         <div class="form-group">
-          <form:input path="brand" class="form-control" id="brand" placeholder="brand"/>
+          <form:input path="brand" class="form-control" id="brand" placeholder="brand" name="brand"/>
         </div>
         <div class="form-group"></div>
-        <button type="submit" class="btn btn-default"><i class="fa fa-angle-double-right"></i> search</button>
+        <button type="submit" class="btn btn-default" id="search"><i class="fa fa-angle-double-right"></i> search</button>
       </form:form>
     </div>
     
@@ -93,8 +96,14 @@
     <div class="pages">
       <nav class="page-nav">
         <ul class="pager">
-          <li class="previous"><a href="${pageContext.request.contextPath}/<c:out value="${startPage}"/><c:out value="${preLink}"/>">prev &rarr;</a></li>
-          <li class="next"><a href="${pageContext.request.contextPath}/<c:out value="${startPage}"/><c:out value="${nextLink}"/>">next &rarr;</a></li>
+        
+         <c:if test="${prePage != 0}">
+          <li class="previous"><a href="${pageContext.request.contextPath}/<c:out value="${startPage}"/><c:out value="${prePage}"/>">←prev</a></li>
+         </c:if>
+          <c:if test="${countPage != nowPage}">
+          <li class="next"><a href="${pageContext.request.contextPath}/<c:out value="${startPage}"/><c:out value="${nextPage}"/>">next→</a></li>
+        </c:if>
+        
         </ul>
       </nav>
 
@@ -114,7 +123,7 @@
         
          <c:forEach var="item" items="${itemList}" varStatus="status">
           <tr>
-            <td class="item-name"><a href="${pageContext.request.contextPath}/viewItemDetail/detail?id=<c:out value="${item.id}"/>"> <c:out value="${item.name}" /> </a></td>
+            <td class="item-name"><a href="${pageContext.request.contextPath}/viewItemDetail/detail?id=<c:out value="${item.id}"/>" id="detail"> <c:out value="${item.name}" /> </a></td>
             <td class="item-price"><c:out value="${item.price}" /></td>
             <td class="item-category">
             
@@ -140,8 +149,14 @@
     <div class="pages">
       <nav class="page-nav">
         <ul class="pager">
-          <li class="previous"><a href="${pageContext.request.contextPath}/<c:out value="${startPage}"/><c:out value="${preLink}"/>">prev &rarr;</a></li>
-          <li class="next"><a href="${pageContext.request.contextPath}/<c:out value="${startPage}"/><c:out value="${nextLink}"/>">next &rarr;</a></li>
+        
+        <c:if test="${prePage != 0}">
+          <li class="previous"><a id="prev" href="${pageContext.request.contextPath}/<c:out value="${startPage}"/><c:out value="${prePage}"/>">←prev</a></li>
+        </c:if>
+        <c:if test="${countPage != nowPage}">
+          <li class="next"><a id="next" href="${pageContext.request.contextPath}/<c:out value="${startPage}"/><c:out value="${nextPage}"/>">next→</a></li>
+        </c:if>
+        
         </ul>
       </nav>
       <!-- ページ番号を指定して表示するフォーム -->
@@ -150,9 +165,9 @@
           <div class="form-group">
             <div class="input-group col-xs-6">
               <label></label>
-              <input type="text" name="pageNum" class="form-control"/>
+              <input type="text" name="pageNum" class="form-control" value="${nowPage}" />
               <!-- 総ページ数 -->
-              <div class="input-group-addon">/ <c:out value="${countPage}"/></div>
+              <div class="input-group-addon">/<c:out value="${countPage}"/></div>
             </div>
             <div class="input-group col-xs-1">
         	<div class="form-name">

@@ -7,6 +7,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +21,8 @@ import jp.co.rakus.domain.Item;
 import jp.co.rakus.domain.LoginUser;
 import jp.co.rakus.form.ItemForm;
 import jp.co.rakus.service.CategoryService;
-import jp.co.rakus.service.ItemService;
+import jp.co.rakus.service.EditItemService;
+import jp.co.rakus.service.ViewItemDetailService;
 
 @Controller
 @Transactional
@@ -27,7 +30,10 @@ import jp.co.rakus.service.ItemService;
 public class EditItemController {
 
 	@Autowired
-	private ItemService itemService;
+	private EditItemService editItemService;
+	
+	@Autowired
+	private ViewItemDetailService viewItemDetailservice;
 
 	@Autowired
 	private CategoryService categoryService;
@@ -40,10 +46,18 @@ public class EditItemController {
 		return new ItemForm();
 	}
 
+	/**
+	 *　商品編集ページを表示する.
+	 * 
+	 * @param id 商品のID
+	 * @param model
+	 * @param loginUser
+	 * @return　商品編集画面.
+	 */
 	@RequestMapping("/toEdit")
 	public String toEdit(@RequestParam("id") Integer id,Model model,@AuthenticationPrincipal LoginUser loginUser) {
 		
-		Item item = itemService.findById(id);
+		Item item = viewItemDetailservice.findById(id);
 		Category category = categoryService.findNameAllById(item.getCategory());
 		
 		model.addAttribute("item", item);
@@ -56,12 +70,26 @@ public class EditItemController {
 		return "edit";
 	}
 	
+	/**
+	 * 商品編集フォームに入力された情報を元に、商品情報を更新する.
+	 * 
+	 * @param itemForm
+	 * @param result
+	 * @param id
+	 * @param model
+	 * @param loginUser
+	 * @return 情報更新後の商品詳細画面.
+	 */
 	@RequestMapping("/edit")
-	public String edit(ItemForm itemForm,String id,Model model, @AuthenticationPrincipal LoginUser loginUser) {
+	public String edit(@Validated ItemForm itemForm,BindingResult result,String id,Model model, @AuthenticationPrincipal LoginUser loginUser) {
 		
-		System.out.println(itemForm.toString());
+		//エラーチェック用.
+		if(result.hasErrors()) {
+			return toEdit(Integer.parseInt(id),model,loginUser);
+		}
+		
 		itemForm.setId(Integer.parseInt(id));
-		itemService.update(itemForm);
+		editItemService.update(itemForm);
 		
 		return viewItemDetailController.detail(Integer.parseInt(id), model,loginUser);
 	}
@@ -69,8 +97,7 @@ public class EditItemController {
 	/**
 	 * プルダウンで親カテゴリーが変更された際に、表示させる子カテゴリーのプルダウンの内容を変更する.
 	 * 
-	 * @param value
-	 *            親カテゴリーのID
+	 * @param value 親カテゴリーのID
 	 * @return 親カテゴリーに紐づく子カテゴリーの情報.
 	 */
 	@RequestMapping(value = "/pulldown/{value}", method = RequestMethod.GET, produces = "text/plain;charset=UTF-8")

@@ -12,7 +12,7 @@ import jp.co.rakus.domain.Category;
 import jp.co.rakus.domain.Item;
 import jp.co.rakus.domain.LoginUser;
 import jp.co.rakus.service.CategoryService;
-import jp.co.rakus.service.ItemService;
+import jp.co.rakus.service.ViewItemDetailService;
 
 
 /**
@@ -27,7 +27,7 @@ import jp.co.rakus.service.ItemService;
 public class ViewItemDetailController {
 	
 	@Autowired
-	private ItemService itemService;
+	private ViewItemDetailService viewItemDetailService;
 	
 	@Autowired
 	private CategoryService categoryService;
@@ -41,7 +41,7 @@ public class ViewItemDetailController {
 	@RequestMapping("/detail")
 	public String detail(@RequestParam("id") Integer id,Model model, @AuthenticationPrincipal LoginUser loginUser) {
 		
-		Item item = itemService.findById(id);
+		Item item = viewItemDetailService.findById(id);
 		Category category = categoryService.findNameAllById(item.getCategory());
 		
 		model.addAttribute("item", item);

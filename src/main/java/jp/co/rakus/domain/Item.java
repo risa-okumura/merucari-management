@@ -22,10 +22,8 @@ public class Item {
 	private Integer price;
 	/**	商品の運送状態ID*/
 	private Integer shipping;
-	
 	/**	商品の説明*/
 	private String description;
-	
 	/**	商品のカテゴリー情報*/
 	private Category categoryName;
 	

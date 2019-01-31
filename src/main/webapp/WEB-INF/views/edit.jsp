@@ -19,7 +19,9 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
     integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
     <script src="../../js/pulldown.js"></script>
+      <script src="../../js/back.js"></script>
   <title>Rakus Items</title>
 </head>
 <body>
@@ -60,6 +62,7 @@
       <div class="form-group">
         <label for="inputName" class="col-sm-2 control-label">name</label>
         <div class="col-sm-8">
+          <form:errors path="name" cssStyle="color:red" element="div"/>
           <form:input path="name" class="form-control" id="name" placeholder="item_name" value="${item.name}" />
         </div>
       </div>
@@ -67,8 +70,8 @@
       <div class="form-group">
         <label for="price" class="col-sm-2 control-label">price</label>
         <div class="col-sm-8">
+          <form:errors path="price" cssStyle="color:red" element="div"/>
           <form:input path="price" class="form-control" id="price" placeholder="price" value="${item.price}"/>
-          <span class="text-danger">error:may not be empty</span>
         </div>
       </div>
       <!-- category -->
@@ -108,6 +111,7 @@
       <div class="form-group">
         <label for="brand" class="col-sm-2 control-label">brand</label>
         <div class="col-sm-8">
+         <form:errors path="brand" cssStyle="color:red" element="div"/>
          <form:input path="brand" class="form-control" id="brand" placeholder="brand" value="${item.brand}"/>
         </div>
       </div>
@@ -135,6 +139,7 @@
       <div class="form-group">
         <label for="description" class="col-sm-2 control-label">description</label>
         <div class="col-sm-8">
+         <form:errors path="description" cssStyle="color:red" element="div"/>
          <textarea rows="5" name="description" class="form-control" id="description" placeholder="description"><c:out value="${item.description}"/></textarea>
         </div>
       </div>

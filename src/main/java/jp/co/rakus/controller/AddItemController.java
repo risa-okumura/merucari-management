@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import jp.co.rakus.domain.Category;
 import jp.co.rakus.domain.LoginUser;
 import jp.co.rakus.form.ItemForm;
+import jp.co.rakus.service.AddItemService;
 import jp.co.rakus.service.CategoryService;
-import jp.co.rakus.service.ItemService;
 
 /**
  * 商品を登録するコントローラ.
@@ -31,15 +31,13 @@ import jp.co.rakus.service.ItemService;
 @Transactional
 @RequestMapping("/addItem")
 public class AddItemController {
-
+	
 	@Autowired
-	private ItemService itemService;
+	private AddItemService addItemService;
 	
 	@Autowired
 	private CategoryService categoryService;
 	
-	
-
 	@ModelAttribute
 	public ItemForm setUpForm() {
 		return new ItemForm();
@@ -67,17 +65,18 @@ public class AddItemController {
 	@RequestMapping("/addItem")
 	public String addItem(@Validated ItemForm itemForm,BindingResult result,Model model,@AuthenticationPrincipal LoginUser loginUser) {
 		
+		//エラーチェック用
 		if(result.hasErrors()) {
 			return add(model,loginUser);
 		}
 
-		itemService.addItem(itemForm);
+		addItemService.addItem(itemForm);
 		
 		return "redirect:/addItem/add";
 	}
 
 	/**
-	 * プルダウンで親カテゴリーが変更された際に、表示させる子カテゴリーのプルダウンの内容を変更する.
+	 * プルダウンで直属の親カテゴリーが変更された際に、表示させる直属の子カテゴリーのプルダウンの内容を変更する.
 	 * 
 	 * @param value
 	 *            親カテゴリーのID
@@ -87,8 +86,8 @@ public class AddItemController {
 	@ResponseBody
 	public String changeChildPulldown(@PathVariable("value") String value) {
 
-		Integer parentId = Integer.parseInt(value);
-		String str = categoryService.pulldownCategory(parentId);
+		Integer searchId = Integer.parseInt(value);
+		String str = categoryService.pulldownCategory(searchId);
 
 		return str;
 

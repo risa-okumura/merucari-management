@@ -19,6 +19,9 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
     integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+  <script src="../../js/back.js"></script>
+<!--   <script src="../../js/read-cookie.js"></script> -->
   <title>Rakus Items</title>
 </head>
 <body>
@@ -50,7 +53,7 @@
 
   <!-- details -->
   <div class="container">
-    <button type="button" class="btn btn-default" onclick="history.back()"><i class="fa fa-reply"></i>back</button>
+    <button type="button" class="btn btn-default" id="back"><i class="fa fa-reply"></i>back</button>
     <h2>Details</h2>
     <div id="details">
       <table class="table table-hover">

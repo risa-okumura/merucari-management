@@ -156,6 +156,7 @@ public class ItemRepository {
 		SqlParameterSource param = new MapSqlParameterSource().addValue("name", "%" + name + "%").addValue("offset", offset);
 		String sql = "SELECT id,name,condition,category,brand,price,shipping,description FROM items WHERE LOWER(name) LIKE LOWER(:name) ORDER BY name LIMIT 30 OFFSET :offset;";
 		List<Item> itemList = template.query(sql, param, ITEM_ROW_MAPPER);
+		
 		return itemList;
 	}
 

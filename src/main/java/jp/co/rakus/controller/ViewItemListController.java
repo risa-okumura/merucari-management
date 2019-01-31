@@ -13,15 +13,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttributes;
 
 import jp.co.rakus.domain.Category;
 import jp.co.rakus.domain.Item;
 import jp.co.rakus.domain.LoginUser;
 import jp.co.rakus.form.SearchItemForm;
 import jp.co.rakus.service.CategoryService;
-import jp.co.rakus.service.ItemService;
 import jp.co.rakus.service.PagingItemListService;
+import jp.co.rakus.service.SearchItemService;
 
 /**
  * 商品一覧画面を表示するコントローラー.
@@ -35,7 +34,7 @@ import jp.co.rakus.service.PagingItemListService;
 public class ViewItemListController {
 
 	@Autowired
-	private ItemService itemService;
+	private SearchItemService searchItemService;
 
 	@Autowired
 	private CategoryService categoryService;
@@ -58,8 +57,9 @@ public class ViewItemListController {
 	public String list(Model model, @AuthenticationPrincipal LoginUser loginUser,@RequestParam(value="pageNum",required = false) String pageNum) {
 		
 		// 商品一覧を表示する.
-		Integer offset = pagingItemListService.offset(pageNum);
-		List<Item> itemList = categoryService.findCategoryList(itemService.findAll(offset));
+		Integer nowPage = pagingItemListService.nowPage(pageNum);
+		Integer offset = pagingItemListService.offset(nowPage);
+		List<Item> itemList = categoryService.findCategoryList(searchItemService.findAll(offset));
 		model.addAttribute("itemList", itemList);
 
 		// 検索用の親カテゴリーの情報を取得し、リクエストスコープに格納する（初期）.
@@ -70,16 +70,18 @@ public class ViewItemListController {
 		Integer countPage = pagingItemListService.countPage();
 		model.addAttribute("countPage", countPage);
 		
-		//ページング用リンクをリクエストスコープに格納する.
-		System.out.println("現在のページは"+pageNum);
-		Integer nextLink = pagingItemListService.nextLink(pageNum,countPage);
-		System.out.println("次のリンク"+nextLink);
-		model.addAttribute("nextLink",nextLink);
+		//現在のページ番号をリクエストスコープに格納する.
+		model.addAttribute("nowPage",nowPage);
 		
-		Integer preLink = pagingItemListService.preLink(pageNum);
-		System.out.println("前のリンク"+preLink);
-		model.addAttribute("preLink",preLink);
+		// 次のページ番号をリクエストスコープに格納する.
+		Integer nextPage = pagingItemListService.nextLink(nowPage,countPage);
+		model.addAttribute("nextPage",nextPage);
 		
+		// 1つ前のページ番号をリクエストスコープに格納する.
+		Integer prePage = pagingItemListService.preLink(nowPage);
+		model.addAttribute("prePage",prePage);
+		
+		// ページング処理を行うのに、リクエストパラメータを送るためのパスを指定.
 		String startPage = "viewItemList/list?pageNum=";
 		model.addAttribute("startPage",startPage);
 		
@@ -96,6 +98,10 @@ public class ViewItemListController {
 	@RequestMapping(value = "/pulldown/{value}", method = RequestMethod.GET, produces = "text/plain;charset=UTF-8")
 	@ResponseBody
 	public String changeChildPulldown(@PathVariable("value") String value) {
+		
+		if(value.equals("undefined")) {
+			return null;
+		}
 
 		Integer parentId = Integer.parseInt(value);
 		String str = categoryService.pulldownCategory(parentId);
