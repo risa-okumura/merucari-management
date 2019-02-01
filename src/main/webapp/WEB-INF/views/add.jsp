@@ -78,18 +78,18 @@
       <div class="form-group">
         <label for="category" class="col-sm-2 control-label">category</label>
         <div class="col-sm-8">
-          
-          <form:select id="pulldown1" path="parentId" class="form-control">
+                 　　　　<form:errors path="grandChildId" cssStyle="color:red" element="div"/>
+          <form:select id="pulldown1" path="parentId" class="form-control" name="parentId">
             <option value="">- parentCategory -</option>
             <form:options items="${parentList}" itemLabel="name" itemValue="id"></form:options>
           </form:select>
-          
         </div>
       </div>
       <div class="form-group">
         <label for="category" class="col-sm-2 control-label"></label>
         <div class="col-sm-8">
-           <form:select id="pulldown2" path="childId" class="form-control">
+                　　　　<form:errors path="grandChildId" cssStyle="color:red" element="div"/>
+          <form:select id="pulldown2" path="childId" class="form-control" name="childId">
     		<option value="">- childCategory -</option>
 		 </form:select>
         </div>
@@ -97,7 +97,8 @@
       <div class="form-group">
         <label for="category" class="col-sm-2 control-label"></label>
         <div class="col-sm-8">
-       	 <form:select id="pulldown3" path="grandChildId" class="form-control">
+        　　　　<form:errors path="grandChildId" cssStyle="color:red" element="div"/>
+       	 <form:select id="pulldown3" path="grandChildId" class="form-control" name="grandChildId">
     		<option value="">- grandChildCategory -</option>
 		 </form:select>
         </div>
@@ -119,14 +120,18 @@
       <div class="form-group">
         <label for="condition" class="col-sm-2 control-label">condition</label>
         <div class="col-sm-8">
-          <label for="condition1" class="radio-inline">
-            <input type="radio" name="condition" id="condition1" value="1"/> 1
+        　　　　 <form:errors path="condition" cssStyle="color:red" element="div"/>
+          <label for="1" class="radio-inline">
+            <form:radiobutton path="condition" value="1" label="1"/>
+<!--             <input type="radio" name="condition" id="condition1" value="1"/> 1 -->
           </label>
-          <label for="condition2" class="radio-inline">
-            <input type="radio" name="condition" id="condition2" value="2"/> 2
+          <label for="2" class="radio-inline">
+            <form:radiobutton path="condition" value="2" label="2"/>
+<!--             <input type="radio" name="condition" id="condition2" value="2"/> 2 -->
           </label>
-          <label for="condition3" class="radio-inline">
-            <input type="radio" name="condition" id="condition3" value="3"/> 3
+          <label for="3" class="radio-inline">
+            <form:radiobutton path="condition" value="3" label="3"/>
+<!--             <input type="radio" name="condition" id="condition3" value="3"/> 3 -->
           </label>
         </div>
       </div>

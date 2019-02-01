@@ -25,8 +25,10 @@ public class AddItemService {
 		Item item = new Item();
 		BeanUtils.copyProperties(itemForm, item);
 		
-		item.setCategory(itemForm.getGrandChildId());
+		item.setCategory(Integer.parseInt(itemForm.getGrandChildId()));
 		item.setShipping(0);
+		item.setPrice(Integer.parseInt(itemForm.getPrice()));
+		item.setCondition(Integer.parseInt(itemForm.getCondition()));
 		
 		itemRepository.save(item);
 		

@@ -43,9 +43,9 @@ public class SearchItemService {
 		
 		String name = searchItemForm.getName();
 
-		Integer parentId = searchItemForm.getParentId();
-		Integer childId = searchItemForm.getChildId();
-		Integer grandChildId = searchItemForm.getGrandChildId();
+		String parentId = searchItemForm.getParentId();
+		String childId = searchItemForm.getChildId();
+		String grandChildId = searchItemForm.getGrandChildId();
 		String brand = searchItemForm.getBrand();
 		
 		List<Integer> searchIdList = new ArrayList<>();
@@ -61,24 +61,37 @@ public class SearchItemService {
 			brand = null;
 		}
 		
-		// もし検索条件の孫IDがnullなら、親IDと子IDで検索した孫IDリストを検索用IDリストに代入.
-		if (grandChildId == null) {
-			System.out.println("孫IDがNULL");
-
-			searchIdList = categoryRepository.findIdByParentIdANDChildId(parentId, childId);
-
-			// もし検索条件の子IDもnullなら、親IDで検索した孫IDリストを検索用IDリストに代入.
-			if (childId == null) {
-
-				childId = parentId;
-				searchIdList = categoryRepository.findIdByParentIdANDChildId(parentId, childId);
-			}
-
-		} else {
-			//孫IDを検索用IDリストに詰める.
-			searchIdList.add(grandChildId);
+		
+		if(parentId == null) {
+			parentId = "";
 		}
+		
+		
+		
+		if(!parentId.equals("")) {
+			
+			// もし検索条件の孫IDがnullなら、親IDと子IDで検索した孫IDリストを検索用IDリストに代入.
+			if (grandChildId.equals("")) {
+				System.out.println("孫IDがNULL");
+				
+				// もし検索条件の子IDもnullなら、親IDで検索した孫IDリストを検索用IDリストに代入.
+				if (childId.equals("")) {
 
+					childId = parentId;
+					searchIdList = categoryRepository.findIdByParentIdANDChildId(Integer.parseInt(parentId),Integer.parseInt(childId));
+					
+				}else {
+					
+					searchIdList = categoryRepository.findIdByParentIdANDChildId(Integer.parseInt(parentId),Integer.parseInt(childId));
+					
+				}
+				
+			} else {
+				//孫IDを検索用IDリストに詰める.
+				searchIdList.add(Integer.parseInt(grandChildId));
+			}
+			
+		}
 
 		// もし検索条件のカテゴリーIDがない場合は、カテゴリーを指定せずに検索する.
 		//　カテゴリーIDが存在する場合はカテゴリー情報を含めて検索する.

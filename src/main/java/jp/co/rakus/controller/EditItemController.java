@@ -83,12 +83,28 @@ public class EditItemController {
 	@RequestMapping("/edit")
 	public String edit(@Validated ItemForm itemForm,BindingResult result,String id,Model model, @AuthenticationPrincipal LoginUser loginUser) {
 		
+		if(itemForm.getPrice().equals("")) {
+			result.rejectValue("price", "","金額を入力してください");
+		}
+		
+		if(itemForm.getGrandChildId().equals("")) {
+			result.rejectValue("grandChildId", "","カテゴリーを全て指定してください");
+		}
+		
+		if(itemForm.getCondition()==null) {
+			result.rejectValue("condition", "","商品の状態を選択してください");
+		}
+		
+//		if(itemForm.getCondition().equals("")) {
+//			result.rejectValue("condition", "","商品の状態を選択してください");
+//		}
+//		
 		//エラーチェック用.
 		if(result.hasErrors()) {
 			return toEdit(Integer.parseInt(id),model,loginUser);
 		}
 		
-		itemForm.setId(Integer.parseInt(id));
+		itemForm.setId(id);
 		editItemService.update(itemForm);
 		
 		return viewItemDetailController.detail(Integer.parseInt(id), model,loginUser);

@@ -11,11 +11,11 @@ public class SearchItemForm {
 	/**	検索する商品名*/
 	private String name;
 	/**	検索する商品の親ID */
-	private Integer parentId;
+	private String parentId;
 	/**	検索する商品の子ID */
-	private Integer childId;
+	private String childId;
 	/**	検索する商品の孫ID */
-	private Integer grandChildId;
+	private String grandChildId;
 	/**	検索する商品のブランド名 */
 	private String brand;
 	
@@ -25,39 +25,57 @@ public class SearchItemForm {
 		return "SearchItemForm [name=" + name + ", parentId=" + parentId + ", childId=" + childId + ", grandChild="
 				+ grandChildId + ", brand=" + brand + "]";
 	}
+
+
 	public String getName() {
 		return name;
 	}
+
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	public Integer getParentId() {
+
+
+	public String getParentId() {
 		return parentId;
 	}
-	public void setParentId(Integer parentId) {
+
+
+	public void setParentId(String parentId) {
 		this.parentId = parentId;
 	}
-	public Integer getChildId() {
+
+
+	public String getChildId() {
 		return childId;
 	}
-	public void setChildId(Integer childId) {
+
+
+	public void setChildId(String childId) {
 		this.childId = childId;
 	}
-	public Integer getGrandChildId() {
+
+
+	public String getGrandChildId() {
 		return grandChildId;
 	}
-	public void setGrandChildId(Integer grandChildId) {
+
+
+	public void setGrandChildId(String grandChildId) {
 		this.grandChildId = grandChildId;
 	}
+
+
 	public String getBrand() {
 		return brand;
 	}
+
+
 	public void setBrand(String brand) {
 		this.brand = brand;
 	}
-	
-	
-	
+
 	
 
 }

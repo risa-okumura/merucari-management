@@ -65,6 +65,20 @@ public class AddItemController {
 	@RequestMapping("/addItem")
 	public String addItem(@Validated ItemForm itemForm,BindingResult result,Model model,@AuthenticationPrincipal LoginUser loginUser) {
 		
+		System.out.println(itemForm.toString());
+		
+		if(itemForm.getPrice().equals("")) {
+			result.rejectValue("price", "","金額を入力してください");
+		}
+		
+		
+		if(itemForm.getGrandChildId().equals("")) {
+			result.rejectValue("grandChildId", "","カテゴリーを全て指定してください");
+		}
+		
+		if(itemForm.getCondition()==null) {
+			result.rejectValue("condition", "","商品の状態を選択してください");
+		}
 		//エラーチェック用
 		if(result.hasErrors()) {
 			return add(model,loginUser);

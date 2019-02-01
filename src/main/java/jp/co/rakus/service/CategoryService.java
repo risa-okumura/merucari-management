@@ -42,6 +42,10 @@ public class CategoryService {
 				Category category = categoryRepository.findById(id);
 				
 				String categoryName = category.getNameAll();
+				if(categoryName==null) {
+					return itemList;
+					
+				}
 				String[] categoryNames = categoryName.split("/", 3);
 				
 				String parent = categoryNames[0];

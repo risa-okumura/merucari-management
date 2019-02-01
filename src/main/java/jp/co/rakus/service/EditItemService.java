@@ -24,7 +24,7 @@ public class EditItemService {
 		Item item = new Item();
 		BeanUtils.copyProperties(itemForm, item);
 		
-		item.setCategory(itemForm.getGrandChildId());
+		item.setCategory(Integer.parseInt(itemForm.getGrandChildId()));
 		
 		itemRepository.updata(item);
 		

@@ -21,8 +21,10 @@ public class PagingItemListService {
 
 	/**
 	 * 現在のページ番号を数値に変換する.
-	 * @param pageNumStr リクエストパラメータで送られてきたページ番号
-	 * @return　数値に変換した現在のページ番号
+	 * 
+	 * @param pageNumStr
+	 *            リクエストパラメータで送られてきたページ番号
+	 * @return 数値に変換した現在のページ番号
 	 */
 	public Integer nowPage(String pageNumStr) {
 
@@ -89,9 +91,9 @@ public class PagingItemListService {
 	public Integer preLink(Integer nowPage) {
 
 		Integer prePageNum = nowPage - 1;
-				
+
 		if (prePageNum < 0) {
-					prePageNum = 0;
+			prePageNum = 0;
 		}
 		return prePageNum;
 	}
@@ -103,24 +105,24 @@ public class PagingItemListService {
 	 */
 	public Integer countPage() {
 		Integer countPage = itemRepository.countAllItem() / 30;
-		if(countPage==0) {
+		if (countPage == 0) {
 			countPage = 1;
 		}
 		return countPage;
-		
+
 	}
 
 	/**
 	 * 検索結果のページ数を計算する.
 	 * 
 	 * @param searchItemForm
-	 * @return　検索結果を元に計算したページ数
+	 * @return 検索結果を元に計算したページ数
 	 */
 	public Integer countPage(SearchItemForm searchItemForm) {
 		String name = searchItemForm.getName();
-		Integer parentId = searchItemForm.getParentId();
-		Integer childId = searchItemForm.getChildId();
-		Integer grandChildId = searchItemForm.getGrandChildId();
+		String parentId = searchItemForm.getParentId();
+		String childId = searchItemForm.getChildId();
+		String grandChildId = searchItemForm.getGrandChildId();
 		String brand = searchItemForm.getBrand();
 
 		// // もし検索条件の商品名が空文字ならnullを商品名に代入.
@@ -134,60 +136,76 @@ public class PagingItemListService {
 
 		List<Integer> searchIdList = new ArrayList<>();
 		Integer maxPageNum = 0;
+		
+		
+		if(parentId == null) {
+			parentId = "";
+		}
+		
 
-		// もし検索条件の孫IDがnullなら、親IDと子IDで検索した孫IDリストを検索用IDリストに代入.
-		if (grandChildId == null) {
-			searchIdList = categoryRepository.findIdByParentIdANDChildId(parentId, childId);
+		if (!parentId.equals("")) {
 
-			// もし検索条件の子IDもnullなら、親IDで検索した孫IDリストを検索用IDリストに代入.
-			if (childId == null) {
-				childId = parentId;
-				searchIdList = categoryRepository.findIdByParentIdANDChildId(parentId, childId);
+			// もし検索条件の孫IDがnullなら、親IDと子IDで検索した孫IDリストを検索用IDリストに代入.
+			if (grandChildId.equals("")) {
+				System.out.println("孫IDがNULL");
+
+				// もし検索条件の子IDもnullなら、親IDで検索した孫IDリストを検索用IDリストに代入.
+				if (childId.equals("")) {
+
+					childId = parentId;
+					searchIdList = categoryRepository.findIdByParentIdANDChildId(Integer.parseInt(parentId),
+							Integer.parseInt(childId));
+
+				} else {
+					searchIdList = categoryRepository.findIdByParentIdANDChildId(Integer.parseInt(parentId),
+							Integer.parseInt(childId));
+				}
+
+			} else {
+				// 孫IDを検索用IDリストに詰める.
+				searchIdList.add(Integer.parseInt(grandChildId));
 			}
 
-		} else {
-			//孫IDを検索用IDリストに詰める.
-			searchIdList.add(grandChildId);
 		}
 
 		// もし検索条件のカテゴリーIDがない場合は、カテゴリーを指定せずに検索する.
-		//　カテゴリーIDが存在する場合はカテゴリー情報を含めて検索する.
+		// カテゴリーIDが存在する場合はカテゴリー情報を含めて検索する.
 		if (searchIdList.size() == 0) {
 
 			if (name == null && brand == null) {
-				//名前およびブランド名もない場合は全件検索.
+				// 名前およびブランド名もない場合は全件検索.
 				maxPageNum = itemRepository.countAllItem();
 			} else if (name == null) {
-				//名前がない場合はブランド名で検索.
+				// 名前がない場合はブランド名で検索.
 				maxPageNum = itemRepository.countByBrand(brand);
 			} else if (brand == null) {
-				//ブランド名がない場合は商品名で検索.
+				// ブランド名がない場合は商品名で検索.
 				maxPageNum = itemRepository.countByName(name);
 			} else {
-				//商品名とブランド名で検索.
+				// 商品名とブランド名で検索.
 				maxPageNum = itemRepository.countByNameAndBrand(name, brand);
 			}
 
 		} else {
 
 			if (name == null && brand == null) {
-				//名前およびブランド名がない場合はカテゴリー情報のみで検索.
+				// 名前およびブランド名がない場合はカテゴリー情報のみで検索.
 				maxPageNum = itemRepository.countByCategory(searchIdList);
 			} else if (name == null) {
-				//名前がない場合は、ブランド名とカテゴリー情報で検索.
+				// 名前がない場合は、ブランド名とカテゴリー情報で検索.
 				maxPageNum = itemRepository.countByBrandAndCategory(brand, searchIdList);
 			} else if (brand == null) {
-				//ブランド名がない場合は、商品名とカテゴリー情報で検索.
+				// ブランド名がない場合は、商品名とカテゴリー情報で検索.
 				maxPageNum = itemRepository.countByNameAndCategory(name, searchIdList);
 			} else {
-				//ブランド名と商品名とカテゴリー情報で検索.
+				// ブランド名と商品名とカテゴリー情報で検索.
 				maxPageNum = itemRepository.countByNameAndCategoryAndBrand(name, searchIdList, brand);
 			}
 		}
-		
-		maxPageNum = maxPageNum/30;
-		
-		if(maxPageNum==0) {
+
+		maxPageNum = maxPageNum / 30;
+
+		if (maxPageNum == 0) {
 			maxPageNum = 1;
 		}
 

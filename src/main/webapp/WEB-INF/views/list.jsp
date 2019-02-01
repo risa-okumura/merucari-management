@@ -62,7 +62,7 @@
     <!-- 検索フォーム -->
     <div id="forms">
     　　　　 <div class="error" style="color:red"><c:out value="${searchError}"></c:out></div>
-      <form:form modelAttribute="searchItemForm" action="${pageContext.request.contextPath}/searchItem/search" class="form-inline" role="form">
+      <form:form modelAttribute="searchItemForm" action="${pageContext.request.contextPath}/searchItem/search" class="form-inline" role="form" id="searchItemForm">
         <div class="form-group">
           <form:input path="name" class="form-control" id="name" placeholder="item_name" name="name"/>
         </div>
@@ -127,11 +127,11 @@
             <td class="item-price"><c:out value="${item.price}" /></td>
             <td class="item-category">
             
-            	<a href="${pageContext.request.contextPath}/searchItem/search?parentId=<c:out value="${item.categoryName.parentId}"/>"><c:out value="${item.categoryName.parentName}" /></a>
+            	<a href="${pageContext.request.contextPath}/searchItem/searchCategory?parentId=<c:out value="${item.categoryName.parentId}"/>&childId=&grandChildId=" class="category"><c:out value="${item.categoryName.parentName}" /></a>
 	 			
-	 			/<a href="${pageContext.request.contextPath}/searchItem/search?childId=<c:out value="${item.categoryName.childId}"/>"><c:out value="${item.categoryName.childName}" /></a>
+	 			/<a href="${pageContext.request.contextPath}/searchItem/searchCategory?parentId=<c:out value="${item.categoryName.parentId}"/>&childId=<c:out value="${item.categoryName.childId}"/>&grandChildId=" class="category"><c:out value="${item.categoryName.childName}" /></a>
 	 			
-	 			/<a href="${pageContext.request.contextPath}/searchItem/search?grandChildId=<c:out value="${item.categoryName.id}"/>"><c:out value="${item.categoryName.grandChildName}" /></a>
+	 			/<a href="${pageContext.request.contextPath}/searchItem/searchCategory?parentId=<c:out value="${item.categoryName.parentId}"/>&childId=<c:out value="${item.categoryName.childId}"/>&grandChildId=<c:out value="${item.categoryName.id}"/>" class="category"><c:out value="${item.categoryName.grandChildName}" /></a>
 	 			
            </td>
             <td class="item-brand"><a href="${pageContext.request.contextPath}/searchItem/search?brand=<c:out value="${item.brand}"/>"><c:out value="${item.brand}" /></a></td>

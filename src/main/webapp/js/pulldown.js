@@ -9,7 +9,7 @@ $(function() {
 			$.removeCookie("childId",{ path:'/'});
 			$.removeCookie("grandChildId",{ path:'/'});
 		}
-
+		
 			//親カテゴリーが変更されたとき、紐づく子カテゴリーのプルダウンを生成する.
 				$("#pulldown1").on("change",function() {
 					var parentvalue = $("#pulldown1 option:selected").val();
@@ -58,11 +58,13 @@ $(function() {
 							}
 							
 				　　　  });
+					 
 				});
 				//もし子カテゴリーがクッキーに保存されていたら、チェンジイベントを実行する.
 				if($.cookie("childId")){
 					$('#pulldown2').trigger('change');
 				}
+				$("#pulldown3").html('<option value="">- grandChildCategory - </option>');
 				
 	});
 	
@@ -81,7 +83,28 @@ $(function() {
 		$.cookie("childId",childvalue, { path: '/' });
 		$.cookie("grandChildId",grandChildvalue, { path: '/' });
 		
-	});
+	});	
+	
+	//商品一覧のカテゴリー名がクリックされたら、古いクッキーを破棄し、各カテゴリーIDをクッキーに詰める.
+    $('.category').on('click',function(){
+		
+		$.removeCookie("parentId",{ path:'/'});
+		$.removeCookie("childId",{ path:'/'});
+		$.removeCookie("grandChildId",{ path:'/'});
+		
+		var url = $(this).attr("href");
+		
+		//URLからリクエストパラメータを取得する.
+		var parentId = url.match(/parentId=(.*?)(&|$)/)[1];
+		var childId = url.match(/childId=(.*?)(&|$)/)[1];
+		var grandChildId = url.match(/grandChildId=(.*?)(&|$)/)[1];
+		
+		$.cookie("parentId",parentId, { path: '/' });
+		$.cookie("childId",childId, { path: '/' });
+		$.cookie("grandChildId",grandChildId, { path: '/' });
+		
+	});	
+	
 	
 });
 
