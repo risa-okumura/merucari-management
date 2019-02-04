@@ -8,20 +8,17 @@ $(function(){
 		var session_storage = sessionStorage.getItem('search_param');
 	
 		//セッションストレージからページ番号のリクエストパラメータを取得しクッキーへ保存する.
-		
-		var pageNum = ession_storage.getItem.match(/parentId=(.*?)(&|$)/)[1];
+		var pageNum = session_storage.match(/pageNum=(.*?)(&|$)/)[1];
 		if(pageNum == null){
 			var pageNum = 1;
 		}
-		$.removeCookie("pageNum",{ path:'/'});
+		$.removeCookie("pageNum",{ path: '/' });
 		$.cookie("pageNum",pageNum, { path: '/' });
 		
 		//クリックした際のURLのパスを取得し、クッキーに保存する.
-		$.removeCookie("path",{ path:'/'});
-		var pathName = window.location.pathname;
+		$.removeCookie("path",{ path: '/' });
+		var pathName = location.pathname;
 		$.cookie("path",pathName,{ path: '/' });
-		var prePath = $.cookie("path");
-		alert(prePath);
 	});
 	
 

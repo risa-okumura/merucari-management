@@ -74,7 +74,6 @@ public class CategoryService {
 	 * @return　下位カテゴリーのプルダウン内容の詰まった文字列
 	 */
 	public String pulldownCategory(Integer searchId){
-		System.out.println("検索するID"+searchId);
 		StringBuilder stringBuilder = new StringBuilder();
 		String str = "";
 		stringBuilder.append("[");

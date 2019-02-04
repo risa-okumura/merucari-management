@@ -69,7 +69,7 @@ $(function() {
 	});
 	
 	//検索ボタンを押した際、カテゴリーに関する古いクッキーを破棄し、現在選択されているカテゴリーの情報をクッキーに保存する.
-	$('#search').on('click',function(){
+	$(document).on('click','#search',function(){
 		
 		$.removeCookie("parentId",{ path:'/'});
 		$.removeCookie("childId",{ path:'/'});
@@ -86,7 +86,7 @@ $(function() {
 	});	
 	
 	//商品一覧のカテゴリー名がクリックされたら、古いクッキーを破棄し、各カテゴリーIDをクッキーに詰める.
-    $('.category').on('click',function(){
+    $(document).on('click','.category',function(){
 		
 		$.removeCookie("parentId",{ path:'/'});
 		$.removeCookie("childId",{ path:'/'});
@@ -98,6 +98,26 @@ $(function() {
 		var parentId = url.match(/parentId=(.*?)(&|$)/)[1];
 		var childId = url.match(/childId=(.*?)(&|$)/)[1];
 		var grandChildId = url.match(/grandChildId=(.*?)(&|$)/)[1];
+		
+		$.cookie("parentId",parentId, { path: '/' });
+		$.cookie("childId",childId, { path: '/' });
+		$.cookie("grandChildId",grandChildId, { path: '/' });
+		
+	});	
+    
+    $(document).on('click','#detail',function(){
+		
+		$.removeCookie("parentId",{ path:'/'});
+		$.removeCookie("childId",{ path:'/'});
+		$.removeCookie("grandChildId",{ path:'/'});
+		
+		var url = $(this).attr("href");
+		
+		//セッションからリクエストパラメータを取得する.
+		var parentId = session_storage.match(/parentId=(.*?)(&|$)/)[1];
+		var childId = session_storage.match(/childId=(.*?)(&|$)/)[1];
+		var grandChildId = session_storage.match(/grandChildId=(.*?)(&|$)/)[1];
+		alert(grandChildId);
 		
 		$.cookie("parentId",parentId, { path: '/' });
 		$.cookie("childId",childId, { path: '/' });
@@ -124,11 +144,7 @@ $(function() {
 	for(var i=0;i<obj.length;i++){
 			
 		$(id).append("<option value="+obj[i].pulldownValue+">"+obj[i].pulldownLabel+"</option>");
-			
-//		if(obj[i].childvalue == childvalue){
-//			console.log(obj[i].childvalue);
-//			obj[i].selected = true;
-//		}
+
 	}
 	
 }

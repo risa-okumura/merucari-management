@@ -147,7 +147,6 @@ public class PagingItemListService {
 
 			// もし検索条件の孫IDがnullなら、親IDと子IDで検索した孫IDリストを検索用IDリストに代入.
 			if (grandChildId.equals("")) {
-				System.out.println("孫IDがNULL");
 
 				// もし検索条件の子IDもnullなら、親IDで検索した孫IDリストを検索用IDリストに代入.
 				if (childId.equals("")) {

@@ -103,7 +103,6 @@ public class SearchItemController {
 			@RequestParam(value = "pageNum", required = false) String pageNum, SearchItemForm searchItemForm,
 			Model model,SessionStatus sessionStatus) {
 		
-		System.out.println(searchItemForm.toString());
 		//現在のぺージ番号を元に、商品検索結果を取得するための、件数指定用の数値（OFFSET）を取得する.
 		Integer nowPage = pagingItemListService.nowPage(pageNum);
 		Integer offset = pagingItemListService.offset(nowPage);
@@ -157,7 +156,6 @@ public class SearchItemController {
 
 		// 検索結果のページ数をリクエストスコープに格納する.
 		Integer countPage = pagingItemListService.countPage(searchItemForm);
-		System.out.println(countPage);
 		model.addAttribute("countPage", countPage);
 		
 		//現在のページ番号をリクエストスコープに格納する.

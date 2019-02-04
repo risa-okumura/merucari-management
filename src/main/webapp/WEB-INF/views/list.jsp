@@ -17,13 +17,12 @@
   <link rel="stylesheet" href="../../css/mercari.css"/>
   <!-- script -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
     integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+  <script src="../../js/serialize.js"></script>
   <script src="../../js/pulldown.js"></script>
   <script src="../../js/form.js"></script>
-  <script src="../../js/serialize.js"></script>
-<!--   <script src="../../js/read-cookie.js"></script> -->
   <title>Rakus Items</title>
 </head>
 <body>
@@ -123,7 +122,7 @@
         
          <c:forEach var="item" items="${itemList}" varStatus="status">
           <tr>
-            <td class="item-name"><a href="${pageContext.request.contextPath}/viewItemDetail/detail?id=<c:out value="${item.id}"/>" id="detail"> <c:out value="${item.name}" /> </a></td>
+            <td class="item-name"><a id="detail" href="${pageContext.request.contextPath}/viewItemDetail/detail?id=<c:out value="${item.id}"/>"> <c:out value="${item.name}" /> </a></td>
             <td class="item-price"><c:out value="${item.price}" /></td>
             <td class="item-category">
             
